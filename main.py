@@ -664,22 +664,22 @@ def main():
                         )
 
             # --------------------------------
-            # Interaction mode
+            # Single-hand grab / movement
             # --------------------------------
 
             if len(two_hand_points) == 1 and single_hand_point is not None:
 
-                interaction_mode = "MOVE"
+                # Find which hand is currently present
+                active_hand = next(iter(two_hand_points))
 
-                object_x, object_y = single_hand_point
+                # Move only while that hand is pinching
+                if pinch_frames[active_hand] >= required_frames:
+                    interaction_mode = "MOVE"
 
-            elif len(two_hand_points) == 2:
+                    object_x, object_y = single_hand_point
 
-                interaction_mode = "SCALE"
-
-            else:
-
-                interaction_mode = "IDLE"           
+                else:
+                    interaction_mode = "IDLE"           
 
             # --------------------------------
             # Two-hand distance
