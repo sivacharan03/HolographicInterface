@@ -442,7 +442,7 @@ def main():
 
     # Two-hand scaling state
     two_hand_distance = None
-    
+
     button_selected = False
 
     with mp_hands.Hands(
@@ -756,3 +756,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# GitHub auto-push test
