@@ -441,7 +441,9 @@ def main():
     object_size = 120
 
     # Two-hand scaling state
+    
     two_hand_distance = None
+    two_hand_points = {}
 
     button_selected = False
 
@@ -514,6 +516,11 @@ def main():
 
                     # Index fingertip
                     index_tip = hand_landmarks.landmark[8]
+
+                    two_hand_points[hand_label] = (
+                        index_tip.x * w,
+                        index_tip.y * h
+                    )
 
                     x = int(index_tip.x * w)
                     y = int(index_tip.y * h)
@@ -647,6 +654,23 @@ def main():
                             (255, 255, 255),
                             2
                         )
+
+            # --------------------------------
+            # Two-hand distance
+            # --------------------------------
+
+            if "Left" in two_hand_points and "Right" in two_hand_points:
+
+                left_x, left_y = two_hand_points["Left"]
+                right_x, right_y = two_hand_points["Right"]
+
+                two_hand_distance = math.sqrt(
+                    (right_x - left_x) ** 2 +
+                    (right_y - left_y) ** 2
+                )
+
+            else:
+                two_hand_distance = None
 
             # ----------------------------------------
             # Draw virtual button
