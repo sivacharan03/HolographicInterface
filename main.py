@@ -308,16 +308,22 @@ def draw_reticle(frame, x, y, active=False, hand_label="Right"):
         2
     )
 
-def draw_test_object(frame, cx, cy, size):
+def draw_test_object(frame, cx, cy, size, grabbed=False, scaling=False):
     # Holographic test object
     half = size // 2
 
+    if grabbed or scaling:
+        thickness = 3
+    else:
+        thickness = 2
+
+    # Main object
     cv2.rectangle(
         frame,
         (cx - half, cy - half),
         (cx + half, cy + half),
         (255, 255, 255),
-        2
+        thickness
     )
 
     # Center cross
@@ -336,6 +342,25 @@ def draw_test_object(frame, cx, cy, size):
         (255, 255, 255),
         1
     )
+
+    # Interaction status
+    if scaling:
+        status = "SCALING"
+    elif grabbed:
+        status = "GRABBED"
+    else:
+        status = ""
+
+    if status:
+        cv2.putText(
+            frame,
+            status,
+            (cx - 45, cy + half + 28),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            1
+        )
 
 def draw_panel(frame, x, y, width, height, title, lines):
     # Panel outline
@@ -832,7 +857,9 @@ def main():
                 frame,
                 object_x,
                 object_y,
-                object_size
+                object_size,
+                grabbed=object_grabbed,
+                scaling=scale_active
             )
 
             frame = draw_hud(frame)
