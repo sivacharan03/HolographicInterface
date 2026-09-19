@@ -440,16 +440,23 @@ def main():
     object_y = 360
     object_size = 120
 
-    # Two-hand scaling state
-    
-    two_hand_distance = None
+   # --------------------------------
+    # Object interaction state
+    # --------------------------------
+
+    current_hand_points = {}
+    current_pinch_states = {}
+
+    object_grabbed = False
+    grab_hand = None
+    grab_offset_x = 0
+    grab_offset_y = 0
+
+    scale_active = False
     scale_start_distance = None
     scale_start_size = None
-    two_hand_points = {}
-    single_hand_point = None
-    interaction_mode = "IDLE"
 
-    button_selected = False
+    interaction_mode = "IDLE"
 
     with mp_hands.Hands(
         static_image_mode=False,
@@ -483,7 +490,9 @@ def main():
 
             results = hands.process(rgb_frame)
 
-            button_selected = False
+            # Start each frame with fresh hand data
+            current_hand_points.clear()
+            current_pinch_states.clear()
 
             if results.multi_hand_landmarks:
 
@@ -521,15 +530,9 @@ def main():
                     # Index fingertip
                     index_tip = hand_landmarks.landmark[8]
 
-                    two_hand_points[hand_label] = (
-                        index_tip.x * w,
-                        index_tip.y * h
-                    )
-
-                    # Store the current index fingertip
-                    single_hand_point = (
-                        int(index_tip.x * w),
-                        int(index_tip.y * h)
+                    current_hand_points[hand_label] = (
+                        smooth_x,
+                        smooth_y
                     )
 
                     x = int(index_tip.x * w)
@@ -559,6 +562,11 @@ def main():
                         smooth_x,
                         smooth_y
                     ]
+
+                    current_hand_points[hand_label] = (
+                        smooth_x,
+                        smooth_y
+                    )
 
                     x = smooth_x
                     y = smooth_y
@@ -615,6 +623,8 @@ def main():
                         >= required_frames
                     )
 
+                    current_pinch_states[hand_label] = is_pinching
+
                     # --------------------------------
                     # Pointer
                     # --------------------------------
@@ -666,151 +676,163 @@ def main():
                         )
 
             # --------------------------------
-            # Single-hand grab / movement
+            # OBJECT INTERACTION ENGINE
             # --------------------------------
 
-            if len(two_hand_points) == 1 and single_hand_point is not None:
+            hand_count = len(current_hand_points)
 
-                # Find which hand is currently present
-                active_hand = next(iter(two_hand_points))
+            # ========================================
+            # NO HANDS
+            # ========================================
 
-                # Move only while that hand is pinching
-                if pinch_frames[active_hand] >= required_frames:
-                    interaction_mode = "MOVE"
+            if hand_count == 0:
 
-                    object_x, object_y = single_hand_point
+                interaction_mode = "IDLE"
 
-                else:
-                    interaction_mode = "IDLE"           
+                object_grabbed = False
+                grab_hand = None
 
-            # --------------------------------
-            # Two-hand distance
-            # --------------------------------
-
-            if "Left" in two_hand_points and "Right" in two_hand_points:
-
-                left_x, left_y = two_hand_points["Left"]
-                right_x, right_y = two_hand_points["Right"]
-
-                two_hand_distance = math.sqrt(
-                    (right_x - left_x) ** 2 +
-                    (right_y - left_y) ** 2
-                )
-
-            else: 
-                two_hand_distance = None
-
-            # --------------------------------
-            # Two-hand pinch scaling
-            # --------------------------------
-
-            if (
-                two_hand_distance is not None
-                and
-                pinch_frames["Left"] >= required_frames
-                and
-                pinch_frames["Right"] >= required_frames
-            ):
-
-                interaction_mode = "SCALE"
-
-                if scale_start_distance is None:
-
-                    scale_start_distance = two_hand_distance
-                    scale_start_size = object_size
-
-                scale_ratio = (
-                    two_hand_distance /
-                    max(scale_start_distance, 1)
-                )
-
-                new_size = int(
-                    scale_start_size * scale_ratio
-                )
-
-                object_size = max(
-                    60,
-                    min(400, new_size)
-                )
-
-            elif two_hand_distance is None:
-
+                scale_active = False
                 scale_start_distance = None
                 scale_start_size = None
 
-            # ----------------------------------------
-            # Draw virtual button
-            # ----------------------------------------
 
-            if button_selected:
+            # ========================================
+            # ONE HAND
+            # ========================================
 
-                cv2.rectangle(
-                    frame,
-                    (button_x1, button_y1),
-                    (button_x2, button_y2),
-                    (255, 255, 255),
-                    -1
+            elif hand_count == 1:
+
+                hand_label = next(iter(current_hand_points))
+
+                hand_x, hand_y = current_hand_points[hand_label]
+
+                is_pinching = current_pinch_states.get(
+                    hand_label,
+                    False
                 )
 
-                text = "SELECTED"
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 0.7
-                thickness = 2
+                # --------------------------------
+                # Pinch starts / continues
+                # --------------------------------
 
-                text_size = cv2.getTextSize(
-                    text,
-                    font,
-                    font_scale,
-                    thickness
-                )[0]
+                if is_pinching:
 
-                text_x = button_x1 + (button_width - text_size[0]) // 2
-                text_y = button_y1 + (button_height + text_size[1]) // 2
+                    # If this is a NEW grab
+                    if not object_grabbed:
 
-                cv2.putText(
-                    frame,
-                    text,
-                    (text_x, text_y),
-                    font,
-                    font_scale,
-                    (0, 0, 0),
-                    thickness
-                )
-            else:
+                        object_grabbed = True
+                        grab_hand = hand_label
 
-                cv2.rectangle(
-                    frame,
-                    (button_x1, button_y1),
-                    (button_x2, button_y2),
-                    (255, 255, 255),
-                    2
-                )
+                        grab_offset_x = object_x - hand_x
+                        grab_offset_y = object_y - hand_y
 
-                text = "SELECT"
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 0.8
-                thickness = 2
+                    # Move while holding pinch
+                    if object_grabbed and grab_hand == hand_label:
 
-                text_size = cv2.getTextSize(
-                    text,
-                    font,
-                    font_scale,
-                    thickness
-                )[0]
+                        interaction_mode = "MOVE"
 
-                text_x = button_x1 + (button_width - text_size[0]) // 2
-                text_y = button_y1 + (button_height + text_size[1]) // 2
+                        object_x = int(
+                            hand_x + grab_offset_x
+                        )
 
-                cv2.putText(
-                    frame,
-                    text,
-                    (text_x, text_y),
-                    font,
-                    font_scale,
-                    (255, 255, 255),
-                    thickness
+                        object_y = int(
+                            hand_y + grab_offset_y
+                        )
+
+                # --------------------------------
+                # Pinch released
+                # --------------------------------
+
+                else:
+
+                    interaction_mode = "IDLE"
+
+                    object_grabbed = False
+                    grab_hand = None
+
+
+            # ========================================
+            # TWO HANDS
+            # ========================================
+
+            elif hand_count == 2:
+
+                left_x, left_y = current_hand_points["Left"]
+                right_x, right_y = current_hand_points["Right"]
+
+                left_pinching = current_pinch_states.get(
+                    "Left",
+                    False
                 )
 
+                right_pinching = current_pinch_states.get(
+                    "Right",
+                    False
+                )
+
+                # --------------------------------
+                # Both hands pinching = SCALE
+                # --------------------------------
+
+                if left_pinching and right_pinching:
+
+                    interaction_mode = "SCALE"
+
+                    # Stop single-hand grab
+                    object_grabbed = False
+                    grab_hand = None
+
+                    current_distance = math.sqrt(
+                        (right_x - left_x) ** 2 +
+                        (right_y - left_y) ** 2
+                    )
+
+                    # Start a NEW scale gesture
+                    if not scale_active:
+
+                        scale_active = True
+
+                        scale_start_distance = max(
+                            current_distance,
+                            1
+                        )
+
+                        scale_start_size = object_size
+
+                    # Calculate scale relative to gesture start
+                    scale_ratio = (
+                        current_distance /
+                        scale_start_distance
+                    )
+
+                    new_size = int(
+                        scale_start_size *
+                        scale_ratio
+                    )
+
+                    object_size = max(
+                        60,
+                        min(400, new_size)
+                    )
+
+                # --------------------------------
+                # Two hands visible but not both
+                # pinching
+                # --------------------------------
+
+                else:
+
+                    interaction_mode = "IDLE"
+
+                    scale_active = False
+                    scale_start_distance = None
+                    scale_start_size = None
+
+                    object_grabbed = False
+                    grab_hand = None
+
+           
             draw_test_object(
                 frame,
                 object_x,
