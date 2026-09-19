@@ -714,13 +714,11 @@ def main():
 
                 interaction_mode = "SCALE"
 
-                # Start a new scaling gesture
                 if scale_start_distance is None:
 
                     scale_start_distance = two_hand_distance
                     scale_start_size = object_size
 
-                # Scale relative to the starting distance
                 scale_ratio = (
                     two_hand_distance /
                     max(scale_start_distance, 1)
@@ -735,9 +733,8 @@ def main():
                     min(400, new_size)
                 )
 
-            else:
+            elif two_hand_distance is None:
 
-                # Reset scaling anchor after releasing pinch
                 scale_start_distance = None
                 scale_start_size = None
 
