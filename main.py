@@ -445,6 +445,7 @@ def main():
     two_hand_distance = None
     two_hand_points = {}
     single_hand_point = None
+    interaction_mode = "IDLE"
 
     button_selected = False
 
@@ -663,12 +664,22 @@ def main():
                         )
 
             # --------------------------------
-            # Single-hand object movement
+            # Interaction mode
             # --------------------------------
 
             if len(two_hand_points) == 1 and single_hand_point is not None:
 
-                object_x, object_y = single_hand_point            
+                interaction_mode = "MOVE"
+
+                object_x, object_y = single_hand_point
+
+            elif len(two_hand_points) == 2:
+
+                interaction_mode = "SCALE"
+
+            else:
+
+                interaction_mode = "IDLE"           
 
             # --------------------------------
             # Two-hand distance
