@@ -443,6 +443,8 @@ def main():
     # Two-hand scaling state
     
     two_hand_distance = None
+    scale_start_distance = None
+    scale_start_size = None
     two_hand_points = {}
     single_hand_point = None
     interaction_mode = "IDLE"
@@ -699,19 +701,45 @@ def main():
                 two_hand_distance = None
 
             # --------------------------------
-            # Two-hand object scaling
+            # Two-hand pinch scaling
             # --------------------------------
 
-            if two_hand_distance is not None:
+            if (
+                two_hand_distance is not None
+                and
+                pinch_frames["Left"] >= required_frames
+                and
+                pinch_frames["Right"] >= required_frames
+            ):
+
+                interaction_mode = "SCALE"
+
+                # Start a new scaling gesture
+                if scale_start_distance is None:
+
+                    scale_start_distance = two_hand_distance
+                    scale_start_size = object_size
+
+                # Scale relative to the starting distance
+                scale_ratio = (
+                    two_hand_distance /
+                    max(scale_start_distance, 1)
+                )
 
                 new_size = int(
-                    two_hand_distance * 0.8
+                    scale_start_size * scale_ratio
                 )
 
                 object_size = max(
                     60,
                     min(400, new_size)
                 )
+
+            else:
+
+                # Reset scaling anchor after releasing pinch
+                scale_start_distance = None
+                scale_start_size = None
 
             # ----------------------------------------
             # Draw virtual button
