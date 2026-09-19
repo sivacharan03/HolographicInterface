@@ -530,11 +530,6 @@ def main():
                     # Index fingertip
                     index_tip = hand_landmarks.landmark[8]
 
-                    current_hand_points[hand_label] = (
-                        smooth_x,
-                        smooth_y
-                    )
-
                     x = int(index_tip.x * w)
                     y = int(index_tip.y * h)
 
