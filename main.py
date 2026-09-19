@@ -444,6 +444,7 @@ def main():
     
     two_hand_distance = None
     two_hand_points = {}
+    single_hand_point = None
 
     button_selected = False
 
@@ -520,6 +521,12 @@ def main():
                     two_hand_points[hand_label] = (
                         index_tip.x * w,
                         index_tip.y * h
+                    )
+
+                    # Store the current index fingertip
+                    single_hand_point = (
+                        int(index_tip.x * w),
+                        int(index_tip.y * h)
                     )
 
                     x = int(index_tip.x * w)
@@ -654,6 +661,14 @@ def main():
                             (255, 255, 255),
                             2
                         )
+
+            # --------------------------------
+            # Single-hand object movement
+            # --------------------------------
+
+            if len(two_hand_points) == 1 and single_hand_point is not None:
+
+                object_x, object_y = single_hand_point            
 
             # --------------------------------
             # Two-hand distance
