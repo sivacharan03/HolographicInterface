@@ -669,8 +669,23 @@ def main():
                     (right_y - left_y) ** 2
                 )
 
-            else:
+            else: 
                 two_hand_distance = None
+
+            # --------------------------------
+            # Two-hand object scaling
+            # --------------------------------
+
+            if two_hand_distance is not None:
+
+                new_size = int(
+                    two_hand_distance * 0.8
+                )
+
+                object_size = max(
+                    60,
+                    min(400, new_size)
+                )
 
             # ----------------------------------------
             # Draw virtual button
