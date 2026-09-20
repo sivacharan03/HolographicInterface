@@ -1068,7 +1068,11 @@ def main():
 
                 previous_interaction_mode = interaction_mode
 
-           
+            object_transform["x"] = object_x
+            object_transform["y"] = object_y
+            object_transform["size"] = object_size
+            object_transform["rotation"] = object_rotation
+            
             draw_test_object(
                 frame,
                 object_x,
