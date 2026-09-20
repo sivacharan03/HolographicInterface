@@ -491,6 +491,9 @@ def main():
     grab_hand = None
     grab_offset_x = 0
     grab_offset_y = 0
+
+    interaction_owner = None
+    
     object_hovered = False
 
     scale_active = False
