@@ -862,6 +862,11 @@ def main():
 
                 if left_pinching and right_pinching:
 
+                    if not rotation_active:
+                        rotation_active = True
+                        rotation_start_angle = current_angle
+                        rotation_start_value = object_rotation
+
                     interaction_mode = "SCALE"
 
                     # Scaling takes control from single-hand movement
