@@ -414,6 +414,14 @@ def distance(p1, p2):
         (p1.y - p2.y) ** 2
     )
 
+def is_point_inside_object(px, py, ox, oy, size):
+    half = size // 2
+
+    return (
+        ox - half <= px <= ox + half
+        and
+        oy - half <= py <= oy + half
+    )
 
 def main():
 
