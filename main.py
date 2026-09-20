@@ -747,6 +747,11 @@ def main():
 
                 hand_label = next(iter(current_hand_points))
 
+                if interaction_owner is not None:
+                    if hand_label != interaction_owner:
+                        interaction_mode = "IDLE"
+                        return
+
                 hand_x, hand_y = current_hand_points[hand_label]
 
                 object_hovered = is_point_inside_object(
