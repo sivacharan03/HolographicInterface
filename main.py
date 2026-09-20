@@ -991,6 +991,11 @@ def main():
                     scale_start_distance = None
                     scale_start_size = None
 
+                    rotation_active = False
+                    rotation_start_angle = None
+                    rotation_start_value = 0.0
+                    object_rotation = 0.0
+
                 previous_interaction_mode = interaction_mode
 
            
