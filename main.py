@@ -1075,13 +1075,13 @@ def main():
             
             draw_test_object(
                 frame,
-                object_x,
-                object_y,
-                object_size,
+                object_transform["x"],
+                object_transform["y"],
+                object_transform["size"],
                 grabbed=object_grabbed,
                 scaling=scale_active,
                 hovered=object_hovered,
-                rotation=object_rotation
+                rotation=object_transform["rotation"]
             )
 
             frame = draw_hud(frame)
