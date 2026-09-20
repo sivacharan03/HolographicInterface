@@ -347,19 +347,40 @@ def draw_test_object(
         thickness
     )
 
-    # Center cross
+    # Rotated center cross
+    cross_half = 10
+
+    angle_rad = math.radians(rotation)
+
+    cos_a = math.cos(angle_rad)
+    sin_a = math.sin(angle_rad)
+
+    # Horizontal line
+    hx1 = int(cx - cross_half * cos_a)
+    hy1 = int(cy - cross_half * sin_a)
+
+    hx2 = int(cx + cross_half * cos_a)
+    hy2 = int(cy + cross_half * sin_a)
+
+    # Vertical line
+    vx1 = int(cx + cross_half * sin_a)
+    vy1 = int(cy - cross_half * cos_a)
+
+    vx2 = int(cx - cross_half * sin_a)
+    vy2 = int(cy + cross_half * cos_a)
+
     cv2.line(
         frame,
-        (cx - 10, cy),
-        (cx + 10, cy),
+        (hx1, hy1),
+        (hx2, hy2),
         (255, 255, 255),
         1
     )
 
     cv2.line(
         frame,
-        (cx, cy - 10),
-        (cx, cy + 10),
+        (vx1, vy1),
+        (vx2, vy2),
         (255, 255, 255),
         1
     )
