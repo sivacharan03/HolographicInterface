@@ -872,10 +872,16 @@ def main():
                         scale_ratio
                     )
 
-                    object_size = max(
+                    target_size = max(
                         60,
                         min(400, new_size)
                     )
+
+                    object_smooth_size += (
+                        target_size - object_smooth_size
+                    ) * 0.25
+
+                    object_size = int(object_smooth_size)
 
                 # --------------------------------
                 # Two hands visible but not both
