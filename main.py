@@ -850,14 +850,14 @@ def main():
                 )
 
                 # --------------------------------
-                # Both hands pinching = SCALE
+                # BOTH HANDS PINCHING = SCALE
                 # --------------------------------
 
                 if left_pinching and right_pinching:
 
                     interaction_mode = "SCALE"
 
-                    # Stop single-hand grab
+                    # Scaling takes control from single-hand movement
                     object_grabbed = False
                     grab_hand = None
 
@@ -901,8 +901,66 @@ def main():
                     object_size = int(object_smooth_size)
 
                 # --------------------------------
-                # Two hands visible but not both
-                # pinching
+                # SECOND HAND APPEARED
+                # BUT ONLY OWNER IS PINCHING
+                # --------------------------------
+
+                elif interaction_owner is not None:
+
+                    owner_pinching = current_pinch_states.get(
+                        interaction_owner,
+                        False
+                    )
+
+                    # Owner is still holding the object.
+                    # Keep MOVE mode even though another hand appeared.
+                    if (
+                        interaction_owner in current_hand_points
+                        and owner_pinching
+                    ):
+
+                        hand_x, hand_y = current_hand_points[
+                            interaction_owner
+                        ]
+
+                        object_grabbed = True
+                        grab_hand = interaction_owner
+
+                        interaction_mode = "MOVE"
+
+                        target_x = hand_x + grab_offset_x
+                        target_y = hand_y + grab_offset_y
+
+                        object_smooth_x += (
+                            target_x - object_smooth_x
+                        ) * 0.35
+
+                        object_smooth_y += (
+                            target_y - object_smooth_y
+                        ) * 0.35
+
+                        object_x = int(object_smooth_x)
+                        object_y = int(object_smooth_y)
+
+                        # Make sure scaling is inactive
+                        scale_active = False
+                        scale_start_distance = None
+                        scale_start_size = None
+
+                    # Owner released or disappeared
+                    else:
+
+                        interaction_mode = "IDLE"
+
+                        object_grabbed = False
+                        grab_hand = None
+
+                        scale_active = False
+                        scale_start_distance = None
+                        scale_start_size = None
+
+                # --------------------------------
+                # TWO HANDS, NO ACTIVE OWNER
                 # --------------------------------
 
                 else:
