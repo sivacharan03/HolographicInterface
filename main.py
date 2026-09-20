@@ -786,13 +786,19 @@ def main():
 
                         interaction_mode = "MOVE"
 
-                        object_x = int(
-                            hand_x + grab_offset_x
-                        )
+                        target_x = hand_x + grab_offset_x
+                        target_y = hand_y + grab_offset_y
 
-                        object_y = int(
-                            hand_y + grab_offset_y
-                        )
+                        object_smooth_x += (
+                            target_x - object_smooth_x
+                        ) * 0.35
+
+                        object_smooth_y += (
+                            target_y - object_smooth_y
+                        ) * 0.35
+
+                        object_x = int(object_smooth_x)
+                        object_y = int(object_smooth_y)
 
                 # --------------------------------
                 # Pinch released
