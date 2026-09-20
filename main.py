@@ -872,6 +872,17 @@ def main():
                         rotation_start_angle = current_angle
                         rotation_start_value = object_rotation
 
+                    angle_delta = current_angle - rotation_start_angle
+
+                    if angle_delta > 180:
+                        angle_delta -= 360
+                    elif angle_delta < -180:
+                        angle_delta += 360
+
+                    object_rotation = (
+                        rotation_start_value + angle_delta
+                    )
+
                     interaction_mode = "SCALE"
 
                     # Scaling takes control from single-hand movement
