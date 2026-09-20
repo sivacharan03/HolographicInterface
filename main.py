@@ -493,7 +493,7 @@ def main():
     grab_offset_y = 0
 
     interaction_owner = None
-    
+
     object_hovered = False
 
     scale_active = False
@@ -782,6 +782,7 @@ def main():
 
                             object_grabbed = True
                             grab_hand = hand_label
+                            interaction_owner = hand_label
 
                             grab_offset_x = object_x - hand_x
                             grab_offset_y = object_y - hand_y
