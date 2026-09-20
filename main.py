@@ -308,14 +308,16 @@ def draw_reticle(frame, x, y, active=False, hand_label="Right"):
         2
     )
 
-def draw_test_object(frame, cx, cy, size, grabbed=False, scaling=False):
+def draw_test_object(frame, cx, cy, size, grabbed=False, scaling=False, hovered=False):
     # Holographic test object
     half = size // 2
 
     if grabbed or scaling:
         thickness = 3
-    else:
+    elif hovered:
         thickness = 2
+    else:
+        thickness = 1
 
     # Main object
     cv2.rectangle(
@@ -485,6 +487,7 @@ def main():
     grab_hand = None
     grab_offset_x = 0
     grab_offset_y = 0
+    object_hovered = False
 
     scale_active = False
     scale_start_distance = None
@@ -732,9 +735,19 @@ def main():
 
             elif hand_count == 1:
 
+                object_hovered = False
+
                 hand_label = next(iter(current_hand_points))
 
                 hand_x, hand_y = current_hand_points[hand_label]
+
+                object_hovered = is_point_inside_object(
+                    hand_x,
+                    hand_y,
+                    object_x,
+                    object_y,
+                    object_size
+                )
 
                 is_pinching = current_pinch_states.get(
                     hand_label,
@@ -877,7 +890,8 @@ def main():
                 object_y,
                 object_size,
                 grabbed=object_grabbed,
-                scaling=scale_active
+                scaling=scale_active,
+                hovered=object_hovered
             )
 
             frame = draw_hud(frame)
