@@ -900,6 +900,25 @@ def main():
                     object_grabbed = False
                     grab_hand = None
 
+            # --------------------------------
+            # Interaction transition tracking
+            # --------------------------------
+
+            if interaction_mode != previous_interaction_mode:
+
+                if interaction_mode == "IDLE":
+
+                    # Gesture has just been released
+                    object_smooth_x = float(object_x)
+                    object_smooth_y = float(object_y)
+                    object_smooth_size = float(object_size)
+
+                    scale_active = False
+                    scale_start_distance = None
+                    scale_start_size = None
+
+                previous_interaction_mode = interaction_mode
+
            
             draw_test_object(
                 frame,
