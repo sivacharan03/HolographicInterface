@@ -476,6 +476,9 @@ def main():
     object_y = 360
     object_size = 120
 
+    object_smooth_x = float(object_x)
+    object_smooth_y = float(object_y)
+
    # --------------------------------
     # Object interaction state
     # --------------------------------
