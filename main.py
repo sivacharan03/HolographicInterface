@@ -498,6 +498,7 @@ def main():
     scale_start_size = None
 
     interaction_mode = "IDLE"
+    previous_interaction_mode = "IDLE"
 
     with mp_hands.Hands(
         static_image_mode=False,
