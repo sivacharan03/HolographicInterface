@@ -839,6 +839,13 @@ def main():
                 left_x, left_y = current_hand_points["Left"]
                 right_x, right_y = current_hand_points["Right"]
 
+                current_angle = math.degrees(
+                    math.atan2(
+                        right_y - left_y,
+                        right_x - left_x
+                    )
+                )
+
                 left_pinching = current_pinch_states.get(
                     "Left",
                     False
