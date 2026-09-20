@@ -308,7 +308,16 @@ def draw_reticle(frame, x, y, active=False, hand_label="Right"):
         2
     )
 
-def draw_test_object(frame, cx, cy, size, grabbed=False, scaling=False, hovered=False):
+def draw_test_object(
+    frame,
+    cx,
+    cy,
+    size,
+    grabbed=False,
+    scaling=False,
+    hovered=False,
+    rotation=0.0
+):
     # Holographic test object
     half = size // 2
 
@@ -320,10 +329,20 @@ def draw_test_object(frame, cx, cy, size, grabbed=False, scaling=False, hovered=
         thickness = 1
 
     # Main object
-    cv2.rectangle(
+    # Rotated object corners
+    rect = (
+        (cx, cy),
+        (size, size),
+        rotation
+    )
+
+    box = cv2.boxPoints(rect)
+    box = box.astype(int)
+
+    cv2.polylines(
         frame,
-        (cx - half, cy - half),
-        (cx + half, cy + half),
+        [box],
+        True,
         (255, 255, 255),
         thickness
     )
@@ -1029,7 +1048,8 @@ def main():
                 object_size,
                 grabbed=object_grabbed,
                 scaling=scale_active,
-                hovered=object_hovered
+                hovered=object_hovered,
+                rotation=object_rotation
             )
 
             frame = draw_hud(frame)
