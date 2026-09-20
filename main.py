@@ -748,9 +748,16 @@ def main():
                 hand_label = next(iter(current_hand_points))
 
                 if interaction_owner is not None:
-                    if hand_label != interaction_owner:
-                        interaction_mode = "IDLE"
-                        return
+                    if (
+                        object_grabbed
+                        and grab_hand == hand_label
+                        and (
+                            interaction_owner is None
+                            or interaction_owner == hand_label
+                        )
+                    ):
+
+                        interaction_mode = "MOVE"
 
                 hand_x, hand_y = current_hand_points[hand_label]
 
