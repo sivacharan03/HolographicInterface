@@ -747,14 +747,23 @@ def main():
 
                 if is_pinching:
 
-                    # If this is a NEW grab
+                    # Start a grab only when the fingertip
+                    # is actually over the object
                     if not object_grabbed:
 
-                        object_grabbed = True
-                        grab_hand = hand_label
+                        if is_point_inside_object(
+                            hand_x,
+                            hand_y,
+                            object_x,
+                            object_y,
+                            object_size
+                        ):
 
-                        grab_offset_x = object_x - hand_x
-                        grab_offset_y = object_y - hand_y
+                            object_grabbed = True
+                            grab_hand = hand_label
+
+                            grab_offset_x = object_x - hand_x
+                            grab_offset_y = object_y - hand_y
 
                     # Move while holding pinch
                     if object_grabbed and grab_hand == hand_label:
