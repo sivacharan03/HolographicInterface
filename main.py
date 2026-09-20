@@ -516,6 +516,13 @@ def main():
     object_y = 360
     object_size = 120
 
+    object_transform = {
+        "x": object_x,
+        "y": object_y,
+        "size": object_size,
+        "rotation": object_rotation
+    }
+
     object_smooth_x = float(object_x)
     object_smooth_y = float(object_y)
     object_smooth_size = float(object_size)
@@ -544,6 +551,13 @@ def main():
     rotation_start_angle = None
     rotation_start_value = 0.0
     object_rotation = 0.0
+
+    object_transform = {
+        "x": object_x,
+        "y": object_y,
+        "size": object_size,
+        "rotation": object_rotation
+    }
 
     interaction_mode = "IDLE"
     previous_interaction_mode = "IDLE"
