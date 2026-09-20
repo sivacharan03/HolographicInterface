@@ -516,13 +516,6 @@ def main():
     object_y = 360
     object_size = 120
 
-    object_transform = {
-        "x": object_x,
-        "y": object_y,
-        "size": object_size,
-        "rotation": object_rotation
-    }
-
     object_smooth_x = float(object_x)
     object_smooth_y = float(object_y)
     object_smooth_size = float(object_size)
