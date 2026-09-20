@@ -481,11 +481,6 @@ def main():
     scale_start_distance = None
     scale_start_size = None
 
-    rotation_active = False
-    rotation_start_angle = None
-    rotation_start_value = 0.0
-    object_rotation = 0.0
-
     interaction_mode = "IDLE"
 
     with mp_hands.Hands(
